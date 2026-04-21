@@ -30,9 +30,14 @@ def projeter_pea(montant_initial, versement_mensuel, taux_rendement, annees):
         evolution.append(montant)
     return evolution
 
-# Titre et introduction
+# Titre et sélecteur d'âge du PEA
 st.title("📈 Projection PEA Fortunéo (avec TES ETF)")
-st.markdown("*" + " ".join([""] * 10))
+age_pea = st.radio(
+    "🕒 Âge de ton PEA :",
+    ["Plus de 5 ans (17,2 % prélèvements sociaux)", "Moins de 5 ans (PFU 30 %)"],
+    help="Sélectionne l'âge de ton PEA pour ajuster la fiscalité."
+)
+prelevements_sociaux = 0.172 if "5 ans" in age_pea else 0.30
 
 # Section ETF
 st.subheader("📊 Ton portefeuille d'ETF")
@@ -70,9 +75,8 @@ evolution_realiste = projeter_pea(montant_initial, versement_mensuel, taux_reali
 evolution_pessimiste = projeter_pea(montant_initial, versement_mensuel, taux_pessimiste/100, 10)
 
 # Résultats
-# Taux de prélèvements sociaux (17,2 % après 5 ans)
-prelevements_sociaux = 0.172
-
+st.subheader("💰 Résultats (brut et net après fiscalité)")
+col_a, col_b, col_c = st.columns(3)
 with col_a:
     st.metric("Optimiste (10 ans)", f"{evolution_optimiste[-1]:.2f} €", f"{evolution_optimiste[-1]*(1-prelevements_sociaux):.2f} € net")
 with col_b:
@@ -80,8 +84,8 @@ with col_b:
 with col_c:
     st.metric("Pessimiste (10 ans)", f"{evolution_pessimiste[-1]:.2f} €", f"{evolution_pessimiste[-1]*(1-prelevements_sociaux):.2f} € net")
 
-# Ajout d'une note explicative
-st.caption("⚠️ *Après 5 ans, seuls les prélèvements sociaux (17,2 %) s'appliquent sur les plus-values.*")
+# Note fiscale
+st.caption(f"⚠️ *Fiscalité appliquée : {age_pea}. Les montants nets sont calculés après prélèvements.*")
 
 # Graphique d'évolution
 st.subheader("📈 Évolution du capital")
@@ -102,6 +106,9 @@ data = {
     "Pessimiste (brut)": evolution_pessimiste,
     "Réaliste (brut)": evolution_realiste,
     "Optimiste (brut)": evolution_optimiste,
+    "Pessimiste (net)": [x*(1-prelevements_sociaux) for x in evolution_pessimiste],
+    "Réaliste (net)": [x*(1-prelevements_sociaux) for x in evolution_realiste],
+    "Optimiste (net)": [x*(1-prelevements_sociaux) for x in evolution_optimiste],
 }
 df_export = pd.DataFrame(data)
 csv = df_export.to_csv(index=False).encode('utf-8')
