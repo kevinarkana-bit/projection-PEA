@@ -82,7 +82,7 @@ with col_c:
 
 # Ajout d'une note explicative
 st.caption("⚠️ *Après 5 ans, seuls les prélèvements sociaux (17,2 %) s'appliquent sur les plus-values.*")
-    
+
 # Graphique d'évolution
 st.subheader("📈 Évolution du capital")
 fig, ax = plt.subplots(figsize=(10, 5))
