@@ -70,15 +70,19 @@ evolution_realiste = projeter_pea(montant_initial, versement_mensuel, taux_reali
 evolution_pessimiste = projeter_pea(montant_initial, versement_mensuel, taux_pessimiste/100, 10)
 
 # Résultats
-st.subheader("💰 Résultats (brut et net après PFU 30%)")
-col_a, col_b, col_c = st.columns(3)
-with col_a:
-    st.metric("Optimiste (10 ans)", f"{evolution_optimiste[-1]:.2f} €", f"{evolution_optimiste[-1]*0.7:.2f} € net")
-with col_b:
-    st.metric("Réaliste (10 ans)", f"{evolution_realiste[-1]:.2f} €", f"{evolution_realiste[-1]*0.7:.2f} € net")
-with col_c:
-    st.metric("Pessimiste (10 ans)", f"{evolution_pessimiste[-1]:.2f} €", f"{evolution_pessimiste[-1]*0.7:.2f} € net")
+# Taux de prélèvements sociaux (17,2 % après 5 ans)
+prelevements_sociaux = 0.172
 
+with col_a:
+    st.metric("Optimiste (10 ans)", f"{evolution_optimiste[-1]:.2f} €", f"{evolution_optimiste[-1]*(1-prelevements_sociaux):.2f} € net")
+with col_b:
+    st.metric("Réaliste (10 ans)", f"{evolution_realiste[-1]:.2f} €", f"{evolution_realiste[-1]*(1-prelevements_sociaux):.2f} € net")
+with col_c:
+    st.metric("Pessimiste (10 ans)", f"{evolution_pessimiste[-1]:.2f} €", f"{evolution_pessimiste[-1]*(1-prelevements_sociaux):.2f} € net")
+
+# Ajout d'une note explicative
+st.caption("⚠️ *Après 5 ans, seuls les prélèvements sociaux (17,2 %) s'appliquent sur les plus-values.*")
+    
 # Graphique d'évolution
 st.subheader("📈 Évolution du capital")
 fig, ax = plt.subplots(figsize=(10, 5))
